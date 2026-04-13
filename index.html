@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: 'Playfair Display', serif;
+            overflow-x: hidden;
+        }
+
+        /* --- Intro Screen --- */
+        #intro-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            transition: opacity 1.5s ease-in-out;
+            background-color: #121212;
+        }
+
+        .heart-container {
+            cursor: pointer;
+            text-align: center;
+            animation: heartbeat 1.5s infinite;
+        }
+
+        .heart {
+            color: #ffb6c1;
+            font-size: 80px;
+            text-shadow: 0 0 20px #ffb6c1, 0 0 40px #ff69b4;
+        }
+
+        .open-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 30px;
+            color: #ffb6c1;
+            margin-top: -45px;
+            position: relative;
+            z-index: 2;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* --- Notebook Layout --- */
+        #notebook {
+            display: none;
+            height: 100vh;
+            width: 100%;
+            background-color: #1a1a1a;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Responsive Left/Right for Mobile */
+        @media (min-width: 768px) {
+            #notebook {
+                flex-direction: row;
+                padding: 50px;
+            }
+            .left-page, .right-page {
+                width: 50%;
+                height: 100%;
+            }
+        }
+
+        .left-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-right: 2px dashed #ffb6c1;
+        }
+
+        .left-page h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 60px;
+            color: #ffb6c1;
+            text-align: center;
+            text-shadow: 2px 2px 10px rgba(255, 182, 193, 0.5);
+        }
+
+        .right-page {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Controls & Elements */
+        .audio-btn {
+            background: transparent;
+            border: 1px solid #ffb6c1;
+            color: #ffb6c1;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-family: 'Playfair Display', serif;
+            cursor: pointer;
+            margin-bottom: 30px;
+            transition: 0.3s;
+        }
+
+        .audio-btn:hover {
+            background: #ffb6c1;
+            color: #121212;
+        }
+
+        .cake-container {
+            font-size: 80px;
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .candles {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 30px;
+            transition: opacity 0.5s;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 300px;
+            border: 2px solid #ffb6c1;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(255, 182, 193, 0.3);
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        /* --- Falling Balloons --- */
+        .balloon {
+            position: absolute;
+            font-size: 40px;
+            top: -50px;
+            animation: fall linear forwards;
+            opacity: 0.8;
+            z-index: 5;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(100vh) rotate(20deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen">
+        <div class="heart-container" onclick="openNotebook()">
+            <div class="heart">❤</div>
+            <div class="open-text">Open</div>
+        </div>
+    </div>
+
+    <div id="notebook">
+        <div class="left-page">
+            <h1>Happy<br>Birthday</h1>
+        </div>
+
+        <div class="right-page" id="right-page">
+            <button class="audio-btn" id="audioBtn" onclick="toggleAudio()">Play Music 🎵</button>
+            
+            <div class="cake-container">
+                <div class="candles" id="candles">🕯️🕯️</div>
+                🎂
+            </div>
+
+            <div class="video-container">
+                <video id="bdayVideo" controls>
+                    <source src="your-video.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" src="your-audio.mp3" loop></audio>
+
+    <script>
+        function openNotebook() {
+            // Hide intro
+            let intro = document.getElementById('intro-screen');
+            let notebook = document.getElementById('notebook');
+            
+            intro.style.opacity = '0';
+            setTimeout(() => {
+                intro.style.display = 'none';
+                notebook.style.display = 'flex';
+                // Trigger reflow
+                void notebook.offsetWidth; 
+                notebook.style.opacity = '1';
+                
+                startAnimations();
+            }, 1000);
+        }
+
+        function startAnimations() {
+            // Blow candles out after 2 seconds
+            setTimeout(() => {
+                document.getElementById('candles').style.opacity = '0';
+            }, 2000);
+
+            // Create falling balloons
+            const rightPage = document.getElementById('right-page');
+            const balloonEmojis = ['🎈', '✨', '💖', '🌸'];
+            
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    let balloon = document.createElement('div');
+                    balloon.className = 'balloon';
+                    balloon.innerText = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+                    balloon.style.left = Math.random() * 90 + '%';
+                    balloon.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                    rightPage.appendChild(balloon);
+                }, i * 300);
+            }
+        }
+
+        function toggleAudio() {
+            let audio = document.getElementById('bgMusic');
+            let btn = document.getElementById('audioBtn');
+            if (audio.paused) {
+                audio.play();
+                btn.innerText = "Pause Music ⏸️";
+            } else {
+                audio.pause();
+                btn.innerText = "Play Music 🎵";
+            }
+        }
+    </script>
+
+</body>
+</html>
